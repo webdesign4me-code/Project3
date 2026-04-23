@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookLoom — weaving words into worlds</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+ 
+  <button class="hamburger" id="hamburger" aria-label="Open menu" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </button>
+
+  
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-text">BookLoom</span>
+      <span class="logo-sub">Weaving words into worlds</span>
+    </div>
+
+    <div class="sidebar-stats">
+      <div class="s-stat">
+        <span class="s-num" id="sTotal">0</span>
+        <span class="s-label">Total</span>
+      </div>
+      <div class="s-stat">
+        <span class="s-num" id="sRead">0</span>
+        <span class="s-label">Read</span>
+      </div>
+      <div class="s-stat">
+        <span class="s-num" id="sReading">0</span>
+        <span class="s-label">Reading</span>
+      </div>
+      <div class="s-stat">
+        <span class="s-num" id="sOut">0</span>
+        <span class="s-label">Lent Out</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Views</div>
+      <button class="nav-btn active" onclick="switchView('all', this)">
+        <span class="icon">📚</span> All Books
+        <span class="count-pill" id="cpAll">0</span>
+      </button>
+      <button class="nav-btn" onclick="switchView('reading', this)">
+        <span class="icon">📖</span> Reading
+        <span class="count-pill" id="cpReading">0</span>
+      </button>
+      <button class="nav-btn" onclick="switchView('read', this)">
+        <span class="icon">✓</span> Finished
+        <span class="count-pill" id="cpRead">0</span>
+      </button>
+      <button class="nav-btn" onclick="switchView('wishlist', this)">
+        <span class="icon">🔖</span> Wishlist
+        <span class="count-pill" id="cpWish">0</span>
+      </button>
+      <button class="nav-btn" onclick="switchView('borrowed', this)">
+        <span class="icon">↗</span> Lent Out
+        <span class="count-pill" id="cpBorr">0</span>
+      </button>
+
+      <div class="nav-section-label">Tools</div>
+      <button class="nav-btn" onclick="showHistory()">
+        <span class="icon">🕓</span> Borrow History
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-add-book" onclick="openAdd()">+ Add New Book</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="topbar">
+      <div class="search-field">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Search title or author…" oninput="render()">
+      </div>
+      <div class="top-filters">
+        <button class="filter-chip active" data-cat="" onclick="setCat('', this)">All</button>
+        <button class="filter-chip" data-cat="Fiction" onclick="setCat('Fiction', this)">Fiction</button>
+        <button class="filter-chip" data-cat="Non-Fiction" onclick="setCat('Non-Fiction', this)">Non-Fiction</button>
+        <button class="filter-chip" data-cat="Science" onclick="setCat('Science', this)">Science</button>
+        <button class="filter-chip" data-cat="Technology" onclick="setCat('Technology', this)">Tech</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-header">
+        <div class="page-title" id="pageTitle">All <span>Books</span></div>
+        <select class="sort-select" id="sortSelect" onchange="render()">
+          <option value="added">Recently Added</option>
+          <option value="title">Title A–Z</option>
+          <option value="author">Author</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+
+      <div id="bookListWrap">
+        <div class="book-list" id="bookList"></div>
+      </div>
+
+      <div id="historyWrap" style="display:none">
+        <div class="history-wrap">
+          <div class="history-head">
+            <div class="h-col">Book</div>
+            <div class="h-col">Borrower</div>
+            <div class="h-col">Lent On</div>
+            <div class="h-col">Due Date</div>
+            <div class="h-col">Status</div>
+            <div class="h-col"></div>
+          </div>
+          <div id="historyRows"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="overlay" id="bookModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="mTitle">Add a Book</h2>
+    </div>
+    <div class="modal-body">
+      <div class="fg-row">
+        <div class="fg">
+          <label for="fTitle">Title *</label>
+          <input id="fTitle" placeholder="Book title">
+        </div>
+        <div class="fg">
+          <label for="fAuthor">Author *</label>
+          <input id="fAuthor" placeholder="Author name">
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label for="fCat">Category</label>
+          <select id="fCat">
+            <option>Fiction</option>
+            <option>Non-Fiction</option>
+            <option>Science</option>
+            <option>History</option>
+            <option>Biography</option>
+            <option>Technology</option>
+            <option>Self-Help</option>
+            <option>Fantasy</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label for="fStatus">Status</label>
+          <select id="fStatus">
+            <option value="wishlist">Wishlist</option>
+            <option value="reading">Reading</option>
+            <option value="read">Read</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label for="fYear">Year</label>
+          <input id="fYear" type="number" placeholder="2026">
+        </div>
+        <div class="fg">
+          <label for="fRating">Rating (1–5)</label>
+          <input id="fRating" type="number" min="1" max="5" placeholder="—">
+        </div>
+      </div>
+      <div class="fg">
+        <label for="fNotes">Notes</label>
+        <textarea id="fNotes" placeholder="Your thoughts…"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveBook()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEND MODAL -->
+<div class="overlay" id="borrowModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Lend This Book</h2>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label for="bName">Borrower Name *</label>
+        <input id="bName" placeholder="Who's borrowing?">
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label for="bLent">Lent On</label>
+          <input type="date" id="bLent">
+        </div>
+        <div class="fg">
+          <label for="bDue">Due Date</label>
+          <input type="date" id="bDue">
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="document.getElementById('borrowModal').classList.remove('open')">Cancel</button>
+      <button class="btn-save" onclick="saveLend()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="script.js"></script>
+</body>
+</html>
